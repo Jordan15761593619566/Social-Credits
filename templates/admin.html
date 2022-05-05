@@ -1,0 +1,14 @@
+{% extends 'layout.html' %}
+{% block content %}
+
+<div class="w3-container">
+<h2>Add a new user:</h2>
+<form action="/add_user" method="post">
+    <p>Name: <input type="text" name="name"></p>
+    <p>Address: <input type="text" name="address"></p>
+    <p>Password: <input type="text" name="password"></p>
+    <input type="submit">
+</form>
+</div>
+
+{% endblock %}

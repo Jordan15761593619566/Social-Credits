@@ -1,0 +1,13 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h3>Hi, {{ user.name }}! Your credit counts are:</h3>
+<p>Total Credit Count: {{ user.credits }}</p>
+
+{% if current_user.permissions == "ADMINISTRATOR" %}
+<form action = "/give_credits" method = "post">
+    <input type="submit" value="Give User Credits">
+</form>
+{% endif %}
+
+{% endblock %}
