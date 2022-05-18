@@ -1,16 +1,16 @@
-<nav>
-    <hr>
-    <a href="/">Home</a>
-    {% if current_user.is_authenticated %}
-    <a href = "/credits">Credits</a>
-    {% endif %}
-    {% if current_user.permissions == 'ADMINISTRATOR' %}
-    <a href="/admin">Admin</a>
-    {% endif %}
-    {% if current_user.is_authenticated %}
-    <a href="/logout">Logout</a>
-    {% else %}
-    <a href="/login">Login</a>
-    {% endif %}
-    <hr>
-</nav>
+<div class="topnav">
+    <nav>
+        <a href="/">Home</a>
+        {% if current_user.is_authenticated %}
+        <a href = "/credits">Credits</a>
+        {% endif %}
+        {% if current_user.permissions == 'ADMINISTRATOR' %}
+        <a href="/admin">Admin</a>
+        {% endif %}
+        {% if current_user.is_authenticated %}
+        <a href="/logout">Logout</a>
+        {% else %}
+        <a href="/login">Login</a>
+        {% endif %}
+    </nav>
+</div>

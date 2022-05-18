@@ -7,3 +7,4 @@ class Select_Activity(FlaskForm):
 
 class Select_User(FlaskForm):
     user = SelectField('user', validators=[DataRequired()], coerce=int)
+

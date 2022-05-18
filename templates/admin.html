@@ -11,4 +11,12 @@
 </form>
 </div>
 
+<div class="w3-container">
+    <h2>Remove a user:</h2>
+    <form action="/delete_user" method="post">
+        {{ deleteForm.csrf_token }} {{ deleteForm.user }}
+        <input type="submit">
+    </form>
+</div>
+
 {% endblock %}

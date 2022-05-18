@@ -1,13 +1,38 @@
 {% extends "layout.html" %}
 {% block content %}
 
+
 <h3>Hi, {{ user.name }}! Your credit counts are:</h3>
-<p>Total Credit Count: {{ user.credits }}</p>
+
+<div class = "credit-table">
+    <table class="credit-table">
+        <tr>
+            <th>Activity Completed</th>
+            <th>Credits Earned</th>
+        </tr>
+        <tr>
+            <td>Starting Credits</td>
+            <td>1000</td>
+        </tr>
+        {% for activity in all_activities %}
+        <tr>
+            <td>{{ activity.type }}</td>
+            <td>{{ activity.value }}</td>
+        </tr>
+        {% endfor %}
+        <tr>
+            <td><b>Total Credit Count:</b></td>
+            <td><b>{{ user_credits }}</b></td>
+        </tr>
+    </table>
+</div>
 
 {% if current_user.permissions == "ADMINISTRATOR" %}
-<form action = "/give_credits" method = "post">
-    <input type="submit" value="Give User Credits">
-</form>
+<div class = "creditButton">
+    <form action = "" method = "post">
+        <input class = "giveCreditButton" type="submit" value="Give User Credits">
+    </form>
+</div>
 {% endif %}
 
 {% endblock %}

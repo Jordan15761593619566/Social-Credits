@@ -1,12 +1,15 @@
 <!doctype html>
 <html>
- <head>
-   <title>Credits - {{page_title}}</title>
- </head>
- <body>
-   {% include 'header.html' %}
-   {% include 'nav.html' %}
-   {% block content %}{% endblock %}
-   {% include 'footer.html' %}
- </body>
+  <head>
+    <link rel="stylesheet" href="/static/layout.css">
+    <title>Credits - {{page_title}}</title>
+  </head>
+  <body>
+    {% include 'header.html' %}
+    {% include 'nav.html' %}
+    <div class="mainbody">
+      {% block content %}{% endblock %}
+    </div>
+    {% include 'footer.html' %}
+  </body>
 </html>

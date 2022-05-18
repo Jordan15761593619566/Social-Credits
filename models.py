@@ -5,8 +5,8 @@ class User(db.Model, UserMixin):
     __tablename__ = 'User'
 
     id = db.Column(db.Integer, primary_key = True)
-    name = db.Column(db.String(80))
-    address = db.Column(db.String(500), nullable = False)
+    name = db.Column(db.String(80), nullable = False)
+    address = db.Column(db.String(500))
     credits = db.Column(db.Integer)
     password = db.Column(db.String)
     permissions = db.Column(db.String(20))
@@ -14,10 +14,20 @@ class User(db.Model, UserMixin):
         return f"Username: {self.name}"
     def check_password(self,password):
         return self.password == password
+    activities_done = db.relationship('User_Activities', back_populates='user', cascade='all, delete-orphan')
 
 class Activities(db.Model):
     __tablename__ = 'Activities'
 
     id = db.Column(db.Integer, primary_key = True)
-    type = db.Column(db.Integer, primary_key = True)
-    value = db.Column(db.Integer, primary_key = True)
+    type = db.Column(db.Integer)
+    value = db.Column(db.Integer)
+
+class User_Activities(db.Model):
+    __tablename__ = 'User_Activities'
+
+    id = db.Column(db.Integer, primary_key = True)
+    user_id = db.Column(db.Integer, db.ForeignKey('User.id'), nullable = False)
+    activity_id = db.Column(db.Integer, db.ForeignKey('Activities.id'), nullable = False)
+
+    user = db.relationship('User')
