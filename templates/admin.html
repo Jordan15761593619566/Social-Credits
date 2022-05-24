@@ -4,18 +4,43 @@
 <div class="w3-container">
 <h2>Add a new user:</h2>
 <form action="/add_user" method="post">
-    <p>Name: <input type="text" name="name"></p>
-    <p>Address: <input type="text" name="address"></p>
-    <p>Password: <input type="text" name="password"></p>
-    <input type="submit">
+    <div class="addUserBoxes"><input type="text" name="name" placeholder="Name" class="textInput"></div>
+    <div class="addUserBoxes"><input type="text" name="address" placeholder="Address" class="textInput"></div>
+    <div class="addUserBoxes"><input type="text" name="password" placeholder="Password" class="textInput"></div>
+    <div class="goButton"><input type="submit" class="submitButton"></div>
 </form>
 </div>
 
-<div class="w3-container">
+<div>
     <h2>Remove a user:</h2>
     <form action="/delete_user" method="post">
-        {{ deleteForm.csrf_token }} {{ deleteForm.user }}
-        <input type="submit">
+        <div class="dropdown">
+            {{ deleteForm.csrf_token }} {{ deleteForm.user }}
+            <input type="submit" class="submitButton">
+        </div>
+    </form>
+</div>
+
+<br>
+<hr> <!--Inserting a small page break, and a horizontal rule, to differentiate the two sections-->
+<br>
+
+<div>
+    <h2>Add a new activity:</h2>
+    <form action = "/add_activity" method="post">
+        <div class="addActivityBoxes"><input type="text" name="type" placeholder = "Activity Name (Text)" class="textInput"></div>
+        <div class="addActivityBoxes"><input type="text" name="value" placeholder = "Activity Value (Number)" class="textInput"></div>
+        <div class="goButton"><input type = "submit" class = "submitButton"></div>
+    </form>
+</div>
+
+<div>
+    <h2>Delete an existing activity:</h2>
+    <form action="/delete_activity" method = "post">
+        <div class = "dropdown">
+            {{ deleteActivityForm.csrf_token }} {{ deleteActivityForm.activity }}
+            <input type = "submit" class="submitButton">
+        </div>
     </form>
 </div>
 

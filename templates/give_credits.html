@@ -1,9 +1,17 @@
 {% extends "layout.html" %}
 {% block content %}
 
-<form method="POST">
-    {{ userform.csrf_token }} {{ userform.user }} 
-    {{ form.csrf_token }} {{ form.activities }} <input type="submit" value="Go">
+<form method="POST" class="selectUser">
+    <div class ="select">
+        {{ userform.crsf_token }} {{ userform.user }}
+        {{ form.crsf_token }} {{ form.activity }} 
+    </div> 
+
+    <br>
+    <div class="goButton">
+        <input type="submit" value="Go" class="submitButton">
+    </div>
 </form>
+
 
 {% endblock %}

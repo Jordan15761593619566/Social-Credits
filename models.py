@@ -22,6 +22,7 @@ class Activities(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     type = db.Column(db.Integer)
     value = db.Column(db.Integer)
+    user_activities = db.relationship('User_Activities', back_populates='activity', cascade='all, delete-orphan')
 
 class User_Activities(db.Model):
     __tablename__ = 'User_Activities'
@@ -31,3 +32,4 @@ class User_Activities(db.Model):
     activity_id = db.Column(db.Integer, db.ForeignKey('Activities.id'), nullable = False)
 
     user = db.relationship('User')
+    activity = db.relationship('Activities')

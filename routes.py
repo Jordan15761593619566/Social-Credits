@@ -26,6 +26,7 @@ WTF_CSRF_SECRET_KEY = 'sup3r_secr3t_passw3rd'
 # Importing the database models
 import models
 
+# Activiting the login manager
 @login_manager.user_loader
 def load_user(user_id):
     return models.User.query.get(user_id)
@@ -68,7 +69,12 @@ def admin():
     deleteForm = Select_User() # Getting the Select_User form and assigning it to deleteForm
     users = models.User.query.all() # Collecting all the User information from the DB
     deleteForm.user.choices = [(user.id, f"{user.id} - {user.name}") for user in users] # assigning all the user id's and names to the choices for the deleteForm.
-    return render_template('admin.html', page_title = 'Admin', deleteForm = deleteForm)
+
+    deleteActivityForm = Select_Activity() # Assigning the Select_Activity form template
+    activities = models.Activities.query.all() # Pulling all activities from the database
+    deleteActivityForm.activity.choices = [(activity.id, f"{activity.id} - {activity.type}") for activity in activities] # Storing all the data into the form template.
+
+    return render_template('admin.html', page_title = 'Admin', deleteForm = deleteForm, deleteActivityForm = deleteActivityForm) # Rendering the admin page, with the two dropdown box forms attached
 
 @app.route('/add_user', methods = ['GET', 'POST'])
 def add_user():
@@ -110,7 +116,7 @@ def credits():
 def give_credits():
     form = Select_Activity()
     activities = models.Activities.query.all()
-    form.activities.choices = [(activity.id, activity.type) for activity in activities]
+    form.activity.choices = [(activity.id, activity.type) for activity in activities]
 
     userform = Select_User()
     users = models.User.query.all()
@@ -118,7 +124,7 @@ def give_credits():
 
     if request.method == "POST":
         if form.is_submitted():
-            activity_id = form.activities.data
+            activity_id = form.activity.data
             activity = models.Activities.query.filter_by(id = activity_id).first()
             user_id = userform.user.data
             user = models.User.query.filter_by(id = user_id).first()
@@ -150,6 +156,33 @@ def delete_user():
             db.Session.commit()#commit change to db
     return redirect(url_for('admin'))
 
+@app.route('/add_activity', methods = ['POST'])
+def add_activity():
+    if request.form:
+        new_type = request.form.get("type") # Getting the Activity Type (Name)
+        new_value = request.form.get("value") # Getting the Activity Value (Credits Worth)
+
+        new_activity = models.Activities(type = new_type, value = new_value) # Creating a new Activity object
+
+        db.session.add(new_activity) # Adding the Activity object to the database session
+        db.session.commit() # Commmiting the database session, saving it to the database, so it is saved and not just sitting in RAM.
+    return redirect(url_for('admin'))
+
+@app.route('/delete_activity', methods = ['GET', 'POST'])
+def delete_activity():
+    deleteActivityForm = Select_Activity()
+    activities = models.Activities.query.all()
+    deleteActivityForm.activity.choices = [(activity.id, f"{activity.id} - {activity.type}") for activity in activities]
+    if request.method == "POST":
+        if deleteActivityForm.is_submitted():
+            print('a')
+            activity_id = deleteActivityForm.activity.data
+            activity = models.Activities.query.filter_by(id = activity_id).first()
+
+            db.Session = db.Session.object_session(activity)
+            db.Session.delete(activity)
+            db.Session.commit()
+    return redirect(url_for('admin'))
 
 if __name__ == "__main__":
     app.run(debug=True, host="127.0.0.1", port=5001)
