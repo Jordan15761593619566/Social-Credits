@@ -7,6 +7,29 @@
   <body>
     {% include 'header.html' %}
     {% include 'nav.html' %}
+    <div>
+      {% with messages = get_flashed_messages(category_filter=["success"]) %}
+          {% if messages %}
+            <div class="alert success">
+              <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+              {% for message in messages %}
+                {{ message }}
+              {% endfor %}
+            </div>
+          {% endif %}
+      {% endwith %}
+
+      {% with errors = get_flashed_messages(category_filter=["error"]) %}
+        {% if errors %}
+        <div class="alert">
+          <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+            {% for msg in errors %}
+              {{ msg }}
+            {% endfor %}
+        </div>
+        {% endif %}
+      {% endwith %}
+    </div>
     <div class="mainbody">
       {% block content %}{% endblock %}
     </div>

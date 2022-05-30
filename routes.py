@@ -4,6 +4,7 @@ from flask_login.utils import login_required, logout_user
 from flask_login import LoginManager, login_user, current_user
 from forms import Select_Activity, Select_User
 import hashlib
+import time
 
 app = Flask(__name__)
 
@@ -43,20 +44,25 @@ def login():
         password = user_hashed_password.hexdigest()
         if user and user.check_password(password):
             login_user(user)
+            if user.permissions == "ADMINISTRATOR":
+                flash ('Successfully logged in with administrative permissions!', 'success') #Letting admin users know they have correct admin perms
+            else:
+                flash('Successfully logged in!', 'success')
             #now current_user is set to this user- redirect back to home
-            return render_template('home.html', page_title='HOME')
+            return redirect(url_for('root'))
         
         # Else flash an error message
         else:
-            flash("Username and password not recognised")
-    return render_template("login.html", page_title = 'login')
+            flash("Incorrect username or password. Please check your details and try again", 'error')
+    return render_template("login.html", page_title = 'Login')
 
 @app.route('/logout', methods=["GET","POST"])
 @login_required
 def logout():
     # log out the user
     logout_user()
-    return redirect(url_for('root'))
+    flash('Successfully logged out!', 'success')
+    return redirect(url_for('root')) # This redirect goes back to the homepage - the '/' (root) route 
 
 # Home page route
 @app.route('/')
@@ -94,19 +100,27 @@ def add_user():
         db.session.add(new_user)
         db.session.commit()
 
-        flash("Successfully created account!")
+        flash("Successfully created account!", 'success')
     return redirect(url_for('admin'))
 
 @app.route('/credits', methods = ["GET","POST"])
 def credits():
+    # Getting the user information from the database, filtering with the current signed in user.
     user = models.User.query.filter_by(id=current_user.id).first()
     user_activities = models.User_Activities.query.filter_by(user_id = current_user.id).all()
+    # Getting the starting credits
     user_credits = user.credits
+    # Creating an empty list to append the activities to
     all_activities = []
+    # Every activity the user has completed
     for user_activity in user_activities:
+        # Getting the activity completed from the database
         activity = models.Activities.query.filter_by(id = user_activity.activity_id).first()
+        # Saving its value
         activity_value = activity.value
+        # Totalling the credits
         user_credits += activity_value
+        # Adding the activity to the list so it can be displayed in the table on the credits page. 
         all_activities.append(activity)
     if request.method == "POST":
         return redirect(url_for("give_credits"))
@@ -135,9 +149,9 @@ def give_credits():
             db.session.add(new_user_activity)
             try:
                 db.session.commit()
-                flash("Successfully updated user credits.")
+                flash("Successfully updated user credits.", 'success')
             except:
-                flash("Failed to update user's credits.")
+                flash("Failed to update user's credits.", 'error')
         return redirect(url_for('credits'))
     return render_template('give_credits.html', page_title = 'Give Credits', form = form, userform = userform)
 
@@ -154,6 +168,7 @@ def delete_user():
             db.Session = db.Session.object_session(user)
             db.Session.delete(user)#delete it
             db.Session.commit()#commit change to db
+            flash('User successfully deleted!', 'success')
     return redirect(url_for('admin'))
 
 @app.route('/add_activity', methods = ['POST'])
@@ -166,22 +181,23 @@ def add_activity():
 
         db.session.add(new_activity) # Adding the Activity object to the database session
         db.session.commit() # Commmiting the database session, saving it to the database, so it is saved and not just sitting in RAM.
+        flash('Successfully added new activity!', 'success')
     return redirect(url_for('admin'))
 
 @app.route('/delete_activity', methods = ['GET', 'POST'])
 def delete_activity():
-    deleteActivityForm = Select_Activity()
-    activities = models.Activities.query.all()
-    deleteActivityForm.activity.choices = [(activity.id, f"{activity.id} - {activity.type}") for activity in activities]
-    if request.method == "POST":
-        if deleteActivityForm.is_submitted():
-            print('a')
-            activity_id = deleteActivityForm.activity.data
-            activity = models.Activities.query.filter_by(id = activity_id).first()
+    deleteActivityForm = Select_Activity() # Assigning the Select_Activity form model
+    activities = models.Activities.query.all() # Pulling the activities from the database
+    deleteActivityForm.activity.choices = [(activity.id, f"{activity.id} - {activity.type}") for activity in activities] # Assigning them to the dropdownn form
+    if request.method == "POST": # If the webpage request returns a response with a 'POST' method
+        if deleteActivityForm.is_submitted(): # Ensuring the specific form is submitted, as multiple forms are present on the Admin page.
+            activity_id = deleteActivityForm.activity.data # Assigning the user's selection to a variable
+            activity = models.Activities.query.filter_by(id = activity_id).first() # Referencing it into the database to get all of the items' information
 
-            db.Session = db.Session.object_session(activity)
-            db.Session.delete(activity)
-            db.Session.commit()
+            db.Session = db.Session.object_session(activity) # Opening a new db Session in reference to the activity object
+            db.Session.delete(activity) # Deleting the activity
+            db.Session.commit() # Commiting it to the database
+            flash('Successfully deleted the activity!', 'success') # This flashes the success message to the user, below the nav bar. The success attribute makes it green.
     return redirect(url_for('admin'))
 
 if __name__ == "__main__":
