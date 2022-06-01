@@ -4,7 +4,6 @@ from flask_login.utils import login_required, logout_user
 from flask_login import LoginManager, login_user, current_user
 from forms import Select_Activity, Select_User
 import hashlib
-import time
 
 app = Flask(__name__)
 
