@@ -27,6 +27,21 @@
     </table>
 </div>
 
+<div class = "homeText">
+    {% if percentage > 0 and percentage <= 100 %}
+        <p>You have {{ percentage * 100 }}% of the recommended credits.</p>
+        <p>You are an okay citizen.</p>
+    {% endif %}
+    {% if percentage > 100 %}
+        <p>You have {{ percentage * 100 }}% of the recommended credits.</p>
+        <p>You are a perfect citizen.</p>
+    {% endif %}
+    {% if percentage < 0 %}
+        <p>You are {{ percentage * -100}}% below the recommended amount of credits.</p>
+        <p>You are a bad citizen. </p>
+    {% endif %}
+</div>
+
 {% if current_user.permissions == "ADMINISTRATOR" %}
 <div class = "creditButton">
     <form action = "" method = "post">

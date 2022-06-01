@@ -1,13 +1,9 @@
 {% extends "layout.html" %}
 {% block content %}
-<div class=w3-container>
 
-{% if current_user.is_authenticated %} 
-    <form action="/logout" method="post">
-        <h1>Logout Here</h1>
-        <input type="submit" value="Logout">
-    </form>
-{% else %}
+<!--This page handles the Login form. Uses put their login information into the two input fields, then press the submit button, passing through all the information to the Python code.-->
+
+<div>
     <form action="" method="post">
         <h1>Login with Username and Password</h1>
         <div class="loginBoxes">
@@ -15,9 +11,9 @@
             <input type="password" name="password" id="password" placeholder="Password" class="loginPassword">
         </div>
         <div class="goButton">
+            <!--The submit buttons-->
             <input type="submit" value="Login" class="submitButton">
         </div>
     </form>
-{% endif %}
 </div>
 {% endblock %}

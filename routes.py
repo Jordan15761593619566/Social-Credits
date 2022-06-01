@@ -105,6 +105,8 @@ def add_user():
 
 @app.route('/credits', methods = ["GET","POST"])
 def credits():
+    recommendedCredits = 5000 # The amount of credits that a "good citizen" should be at. Change this to make the "good citizen" value different.
+
     # Getting the user information from the database, filtering with the current signed in user.
     user = models.User.query.filter_by(id=current_user.id).first()
     user_activities = models.User_Activities.query.filter_by(user_id = current_user.id).all()
@@ -122,37 +124,38 @@ def credits():
         user_credits += activity_value
         # Adding the activity to the list so it can be displayed in the table on the credits page. 
         all_activities.append(activity)
+    percentageOfRecommended = user_credits/recommendedCredits # Getting the percentage of the recommended credits.
     if request.method == "POST":
         return redirect(url_for("give_credits"))
-    return(render_template('credits.html', page_title = 'Credits', user = user, user_credits = user_credits, all_activities = all_activities))
+    return(render_template('credits.html', page_title = 'Credits', user = user, user_credits = user_credits, all_activities = all_activities, percentage = percentageOfRecommended))
 
 @app.route('/give_credits', methods = ["GET", "POST"])
 def give_credits():
-    form = Select_Activity()
-    activities = models.Activities.query.all()
-    form.activity.choices = [(activity.id, activity.type) for activity in activities]
+    form = Select_Activity() # assigning the form to a variable
+    activities = models.Activities.query.all() # pulling the data
+    form.activity.choices = [(activity.id, activity.type) for activity in activities] # assigning the data to the form
 
-    userform = Select_User()
-    users = models.User.query.all()
-    userform.user.choices = [(user.id, f"{user.id} - {user.name}") for user in users]
+    userform = Select_User() # assigning the form to a variable
+    users = models.User.query.all() # pulling the data from the database
+    userform.user.choices = [(user.id, f"{user.id} - {user.name}") for user in users] # assigning the data to the form
 
-    if request.method == "POST":
-        if form.is_submitted():
-            activity_id = form.activity.data
-            activity = models.Activities.query.filter_by(id = activity_id).first()
-            user_id = userform.user.data
-            user = models.User.query.filter_by(id = user_id).first()
+    if request.method == "POST": # if a form is submitted
+        if form.is_submitted(): # and the form is the Select_Activity form for this specific purpose (done this way as there are multiple different forms using the "POST" method on the admin page)
+            activity_id = form.activity.data # Getting the selected activity id from the submitted form
+            activity = models.Activities.query.filter_by(id = activity_id).first() # Getting the activity information by putting the id into the database
+            user_id = userform.user.data # Getting the selected user from the form
+            user = models.User.query.filter_by(id = user_id).first() # Getting the user's information from the database
 
-            user_id = user.id
-            activity_id = activity.id
-            new_user_activity = models.User_Activities(user_id = user_id, activity_id = activity_id)
-            db.session.add(new_user_activity)
-            try:
-                db.session.commit()
-                flash("Successfully updated user credits.", 'success')
-            except:
-                flash("Failed to update user's credits.", 'error')
-        return redirect(url_for('credits'))
+            user_id = user.id # Assigning the database user id to a variable
+            activity_id = activity.id # Assigning the database activity id to the variable
+            new_user_activity = models.User_Activities(user_id = user_id, activity_id = activity_id) # putting these into a database model
+            db.session.add(new_user_activity) # adding it to the database session
+            try: #do this first
+                db.session.commit() # commit it to the database
+                flash("Successfully updated user credits.", 'success') # flash the user with a success message
+            except: # if this fails
+                flash("Failed to update user's credits.", 'error') # flash the user with an error message
+        return redirect(url_for('credits')) # redirect back to the home page
     return render_template('give_credits.html', page_title = 'Give Credits', form = form, userform = userform)
 
 @app.route('/delete_user', methods = ["GET", "POST"])
