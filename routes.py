@@ -71,16 +71,20 @@ def root():
 @app.route('/admin')
 @login_required
 def admin():
-    deleteForm = Select_User() # Getting the Select_User form and assigning it to deleteForm
-    users = models.User.query.all() # Collecting all the User information from the DB
-    deleteForm.user.choices = [(user.id, f"{user.id} - {user.name}") for user in users] # assigning all the user id's and names to the choices for the deleteForm.
+    if current_user.permissions == "ADMINISTRATOR":
+        deleteForm = Select_User() # Getting the Select_User form and assigning it to deleteForm
+        users = models.User.query.all() # Collecting all the User information from the DB
+        deleteForm.user.choices = [(user.id, f"{user.id} - {user.name}") for user in users] # assigning all the user id's and names to the choices for the deleteForm.
 
-    deleteActivityForm = Select_Activity() # Assigning the Select_Activity form template
-    activities = models.Activities.query.all() # Pulling all activities from the database
-    deleteActivityForm.activity.choices = [(activity.id, f"{activity.id} - {activity.type}") for activity in activities] # Storing all the data into the form template.
+        deleteActivityForm = Select_Activity() # Assigning the Select_Activity form template
+        activities = models.Activities.query.all() # Pulling all activities from the database
+        deleteActivityForm.activity.choices = [(activity.id, f"{activity.id} - {activity.type}") for activity in activities] # Storing all the data into the form template.
 
-    return render_template('admin.html', page_title = 'Admin', deleteForm = deleteForm, deleteActivityForm = deleteActivityForm) # Rendering the admin page, with the two dropdown box forms attached
-
+        return render_template('admin.html', page_title = 'Admin', deleteForm = deleteForm, deleteActivityForm = deleteActivityForm) # Rendering the admin page, with the two dropdown box forms attached
+    else:
+        flash('you\'re not an admin, nice try', 'error')
+        return redirect(url_for('root'))
+        
 @app.route('/add_user', methods = ['GET', 'POST'])
 def add_user():
     if request.form:
@@ -91,7 +95,7 @@ def add_user():
 
         # Hashing method
         hashed_password = hashlib.sha256()
-        hashed_password.update(new_password.encode())
+        hashed_password.update(new_password.encode()) # Encode the password
         new_password = hashed_password.hexdigest()
 
         # Creating a new User object - to add to the database.
