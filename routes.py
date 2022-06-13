@@ -69,7 +69,6 @@ def root():
     return render_template('home.html', page_title = 'Home')
 
 @app.route('/admin')
-@login_required
 def admin():
     if current_user.permissions == "ADMINISTRATOR":
         deleteForm = Select_User() # Getting the Select_User form and assigning it to deleteForm
